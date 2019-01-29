@@ -8,7 +8,7 @@
 import scrapy
 
 
-class TmallItem(scrapy.Item):
+class TmallItem(scrapy.Item):   #商品列表Item
     # define the fields for your item here like:
     # name = scrapy.Field()
     item_id = scrapy.Field()
@@ -19,7 +19,7 @@ class TmallItem(scrapy.Item):
     url = scrapy.Field()
     price = scrapy.Field()
 
-class GoodsDetail(scrapy.Item):
+class GoodsDetail(scrapy.Item): #商品详情Item
 
     name = scrapy.Field()
     brand = scrapy.Field()

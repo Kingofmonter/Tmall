@@ -13,7 +13,7 @@ class TmallPipeline(object):
         return item
 
 
-class TmallWithJsonPipeline(object):
+class TmallWithJsonPipeline(object):    #商品列表管道
 
     def __init__(self):
         print(True)
@@ -21,7 +21,7 @@ class TmallWithJsonPipeline(object):
 
     def process_item(self,item,spider):
 
-        if isinstance(item,TmallItem):
+        if isinstance(item,TmallItem):      #判断传入Item
 
             print('tmall_list')
             line = json.dumps(dict(item),ensure_ascii=False)+'\n'
@@ -33,7 +33,7 @@ class TmallWithJsonPipeline(object):
 
         self.file.close()
 
-class GoodsWithJsonPipeline(object):
+class GoodsWithJsonPipeline(object):    #商品详情管道
 
     def __init__(self):
         print(True)
@@ -41,7 +41,7 @@ class GoodsWithJsonPipeline(object):
 
     def process_item(self,item,spider):
 
-        if isinstance(item,GoodsDetail):
+        if isinstance(item,GoodsDetail):        #判断传入Item
 
             line = json.dumps(dict(item),ensure_ascii=False)+'\n'
             self.file.write(line)

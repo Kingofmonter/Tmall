@@ -72,26 +72,26 @@ class UniqloSpider(scrapy.Spider):
 
     def parse(self, response):
 
-        headers = self.get_new_headers()
+        headers = self.get_new_headers()        #获取随机headers
 
         res = requests.get(url=response.url, headers=headers)
 
-        res_json = json.loads(res.text)
+        res_json = json.loads(res.text)         #转换为json格式
 
-        if 'items' in res_json:
+        if 'items' in res_json:                 #提取json 数据
 
-            page_num = res_json['total_page']
+            page_num = res_json['total_page']       #总页数
 
-            current_page = res_json['current_page']
+            current_page = res_json['current_page']     #当前页数
 
             print(res_json['current_page'])
 
-            self.save_data(res_json['items'],headers)
+            self.save_data(res_json['items'],headers)   #商品详情抓取
 
-            if current_page < page_num:
+            if current_page < page_num:                 #判断页数是否到底
 
                 time.sleep(10)
-                yield scrapy.Request(url=parse.urljoin(self.url,'?p=%s'%(int(current_page)+1)),callback=self.parse,dont_filter=True)
+                yield scrapy.Request(url=parse.urljoin(self.url,'?p=%s'%(int(current_page)+1)),callback=self.parse,dont_filter=True)    #下一页爬取
 
         else:
             print('请先在电脑上登陆手机版淘宝')
@@ -99,7 +99,7 @@ class UniqloSpider(scrapy.Spider):
 
 
 
-    def get_new_headers(self):
+    def get_new_headers(self):          #随机更新cookies
 
         isg = random.choice(self.isg_list)
 
@@ -107,7 +107,7 @@ class UniqloSpider(scrapy.Spider):
             "isg": isg
         })
 
-        cookie_list = ''
+        cookie_list = ''                    #cookies转化为str
         for k in self.Cookies:
             cookie_list += k + "=" + self.Cookies[k] + ";"
 
@@ -117,7 +117,7 @@ class UniqloSpider(scrapy.Spider):
 
         return self.loginHeaders
 
-    def save_data(self,json_data,headers):
+    def save_data(self,json_data,headers):          #商品列表爬取
 
         allItem = TmallItem()
 
@@ -136,10 +136,10 @@ class UniqloSpider(scrapy.Spider):
 
         for i in json_data:
             time.sleep(10)
-            yield scrapy.Request(url=parse.urljoin("https:",i['url']),headers=headers,dont_filter=True,callback=self.parse_detail)
+            yield scrapy.Request(url=parse.urljoin("https:",i['url']),headers=headers,dont_filter=True,callback=self.parse_detail)      #爬取商品详情
 
 
-    def parse_detail(self,response):
+    def parse_detail(self,response):        #商品详情爬取
 
         goodsItem = GoodsDetail()
 
@@ -147,15 +147,15 @@ class UniqloSpider(scrapy.Spider):
 
         soup = BeautifulSoup(response.text, 'lxml')
 
-        scr = soup.select('script')[-6].string
+        scr = soup.select('script')[-6].string          #利用Bs4抓取script中的数据
 
-        scr_text = js2xml.parse(scr, debug=False)
+        scr_text = js2xml.parse(scr, debug=False)       #利用js2xml转换script为html树
 
         scr_tree = js2xml.pretty_print(scr_text)
 
         selector = etree.HTML(scr_tree)
 
-        content = selector.xpath("//property[@name='基本信息']/array//object/property/string/text()")
+        content = selector.xpath("//property[@name='基本信息']/array//object/property/string/text()")       #商品基本信息
 
         print(content)
 
