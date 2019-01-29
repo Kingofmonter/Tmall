@@ -6,6 +6,7 @@
 # See: https://doc.scrapy.org/en/latest/topics/item-pipeline.html
 import json
 import codecs
+from Tmall.items import *
 
 class TmallPipeline(object):
     def process_item(self, item, spider):
@@ -20,10 +21,13 @@ class TmallWithJsonPipeline(object):
 
     def process_item(self,item,spider):
 
-        line = json.dumps(dict(item),ensure_ascii=False)+'\n'
-        self.file.write(line)
+        if isinstance(item,TmallItem):
 
-        return item
+            print('tmall_list')
+            line = json.dumps(dict(item),ensure_ascii=False)+'\n'
+            self.file.write(line)
+
+            return item
 
     def spider_closed(self,item,spider):
 
@@ -37,10 +41,12 @@ class GoodsWithJsonPipeline(object):
 
     def process_item(self,item,spider):
 
-        line = json.dumps(dict(item),ensure_ascii=False)+'\n'
-        self.file.write(line)
+        if isinstance(item,GoodsDetail):
 
-        return item
+            line = json.dumps(dict(item),ensure_ascii=False)+'\n'
+            self.file.write(line)
+
+            return item
 
     def spider_closed(self,item,spider):
 
