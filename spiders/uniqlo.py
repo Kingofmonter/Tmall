@@ -84,7 +84,7 @@ class UniqloSpider(scrapy.Spider):
 
             current_page = res_json['current_page']     #当前页数
 
-            print(res_json['current_page'])
+            print(current_page)
 
             self.save_data(res_json['items'],headers)   #商品详情抓取
 
@@ -121,6 +121,8 @@ class UniqloSpider(scrapy.Spider):
 
         allItem = TmallItem()
 
+
+
         for i in json_data:
 
             allItem['item_id'] = i['item_id']
@@ -130,6 +132,7 @@ class UniqloSpider(scrapy.Spider):
             allItem['quantity'] = i['quantity']
             allItem['url'] = i['url']
             allItem['price'] = i['price']
+            print(allItem)
 
             return allItem
 
@@ -137,6 +140,7 @@ class UniqloSpider(scrapy.Spider):
         for i in json_data:
             time.sleep(10)
             yield scrapy.Request(url=parse.urljoin("https:",i['url']),headers=headers,dont_filter=True,callback=self.parse_detail)      #爬取商品详情
+
 
 
     def parse_detail(self,response):        #商品详情爬取

@@ -6,6 +6,7 @@
 # See: https://doc.scrapy.org/en/latest/topics/item-pipeline.html
 import json
 import codecs
+from scrapy.exporters import JsonItemExporter
 from Tmall.items import *
 
 class TmallPipeline(object):
@@ -16,38 +17,33 @@ class TmallPipeline(object):
 class TmallWithJsonPipeline(object):    #商品列表管道
 
     def __init__(self):
-        print(True)
-        self.file = codecs.open('unqilo_list.json','a+',encoding='utf8')
+        self.file = open('uniqlo_list.json', 'ab')
+        self.exporter = JsonItemExporter(self.file, encoding="utf-8", ensure_ascii=False)
+        self.exporter.start_exporting()
 
-    def process_item(self,item,spider):
+    def close_spider(self, spider):
+        self.exporter.finish_exporting()
+        self.file.close()
 
-        if isinstance(item,TmallItem):      #判断传入Item
-
-            print('tmall_list')
-            line = json.dumps(dict(item),ensure_ascii=False)+'\n'
-            self.file.write(line)
-
+    def process_item(self, item, spider):
+        print(item)
+        if isinstance(item,TmallItem):
+            self.exporter.export_item(item)
             return item
 
-    def spider_closed(self,item,spider):
-
-        self.file.close()
 
 class GoodsWithJsonPipeline(object):    #商品详情管道
 
     def __init__(self):
-        print(True)
-        self.file = codecs.open('goods_detail.json','a+',encoding='utf8')
 
-    def process_item(self,item,spider):
+        self.file = open('goodsdetail.json', 'ab')
+        self.exporter = JsonItemExporter(self.file, encoding="utf-8", ensure_ascii=False)
+        self.exporter.start_exporting()
 
-        if isinstance(item,GoodsDetail):        #判断传入Item
-
-            line = json.dumps(dict(item),ensure_ascii=False)+'\n'
-            self.file.write(line)
-
-            return item
-
-    def spider_closed(self,item,spider):
-
+    def close_spider(self, spider):
+        self.exporter.finish_exporting()
         self.file.close()
+
+    def process_item(self, item, spider):
+        self.exporter.export_item(item)
+        return item

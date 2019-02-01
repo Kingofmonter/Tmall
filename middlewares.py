@@ -4,9 +4,22 @@
 #
 # See documentation in:
 # https://doc.scrapy.org/en/latest/topics/spider-middleware.html
-
+import random
 from scrapy import signals
 
+#ip代理池
+class Proxy(object):
+
+    def process_request(self,request,spider):
+
+        h = request.url.split(':')[0]
+
+        if h == 'https':
+            ip = random.choice(Proxy_https)
+            request.meta['proxy'] = 'https://' + ip
+        else:
+            ip = random.choice(Proxy_http)
+            request.meta['proxy'] = 'http://' + ip
 
 class TmallSpiderMiddleware(object):
     # Not all methods need to be defined. If a method is not defined,
@@ -101,3 +114,21 @@ class TmallDownloaderMiddleware(object):
 
     def spider_opened(self, spider):
         spider.logger.info('Spider opened: %s' % spider.name)
+
+
+
+Proxy_http = [
+    '60.255.186.169:8888',
+    '61.166.153.172:80',
+    '62.210.167.3:3128',
+    '160.119.104.69:49327',
+    '104.248.220.253:8080',
+    '101.81.217.191:8060',
+    '101.248.64.68:8080'
+]
+
+Proxy_https = [
+    '114.88.53.19:53281',
+    '218.60.8.99:3129',
+]
+
