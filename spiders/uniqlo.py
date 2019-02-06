@@ -88,10 +88,10 @@ class UniqloSpider(scrapy.Spider):
 
             self.save_data(res_json['items'],headers)   #商品详情抓取
 
-            if current_page < page_num:                 #判断页数是否到底
-
-                time.sleep(10)
-                yield scrapy.Request(url=parse.urljoin(self.url,'?p=%s'%(int(current_page)+1)),callback=self.parse,dont_filter=True)    #下一页爬取
+            # if current_page < page_num:                 #判断页数是否到底
+            #
+            #     time.sleep(10)
+            #     yield scrapy.Request(url=parse.urljoin(self.url,'?p=%s'%(int(current_page)+1)),callback=self.parse,dont_filter=True)    #下一页爬取
 
         else:
             print('请先在电脑上登陆手机版淘宝')
@@ -119,12 +119,12 @@ class UniqloSpider(scrapy.Spider):
 
     def save_data(self,json_data,headers):          #商品列表爬取
 
-        allItem = TmallItem()
 
 
+        print(json_data)
 
         for i in json_data:
-
+            allItem = TmallItem()
             allItem['item_id'] = i['item_id']
             allItem['title'] = i['title']
             allItem['img'] = i['img']
@@ -134,7 +134,7 @@ class UniqloSpider(scrapy.Spider):
             allItem['price'] = i['price']
             print(allItem)
 
-            return allItem
+            yield allItem
 
 
         for i in json_data:
