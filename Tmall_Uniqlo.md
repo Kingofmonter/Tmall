@@ -42,4 +42,7 @@
 	2.可多取几个cookies中的isg的值进行随机组合cookies和设置ip代理池,以免ip被封
 	3.各个商品的详情信息在各自页面的script中，可用bs4和js2xml库进行数据的转换，将script数据转换为HTML树再进行爬取
 	
-	
+##2019.2.25
+    添加商店列表爬取
+    如无法连接主机请在middlewares中间件中更新https的ip地址
+    ip地址运行test.py文件可获取
