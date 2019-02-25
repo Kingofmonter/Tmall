@@ -90,6 +90,14 @@ class UniqloSpider(scrapy.Spider):
         'BBsbLT65w_J4cj8fTnS30GOSqn9FWDCBIeEWMQ1Y95ox7DvOlcC_QjluggxHSYfq'
         ]
 
+
+    def start_requests(self):
+        for url in self.shop_url_list:
+
+            time.sleep(10)
+            print(url)
+            yield scrapy.Request(url=parse.urljoin(url,'shop/shop_auction_search.do'),callback=self.parse,dont_filter=True)    #下一页爬取
+
     def parse(self, response):
 
         headers = self.get_new_headers()        #获取随机headers
@@ -120,8 +128,8 @@ class UniqloSpider(scrapy.Spider):
                 allItem['url'] = i['url']
                 allItem['price'] = i['price']
 
-                print(allItem)
-                return allItem
+
+                yield allItem
 
             # for i in res_json['items']:
             #     time.sleep(10)
@@ -136,11 +144,7 @@ class UniqloSpider(scrapy.Spider):
         else:
             print('Cookies失效，请手动更新Cookies')
 
-        for url in self.shop_url_list:
 
-            time.sleep(10)
-            print(url)
-            yield scrapy.Request(url=parse.urljoin(url,'shop/shop_auction_search.do'),callback=self.parse,dont_filter=True)    #下一页爬取
 
 
 
