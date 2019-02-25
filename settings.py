@@ -68,8 +68,9 @@ DOWNLOADER_MIDDLEWARES = {
 # Configure item pipelines
 # See https://doc.scrapy.org/en/latest/topics/item-pipeline.html
 ITEM_PIPELINES = {
+
    'Tmall.pipelines.TmallWithJsonPipeline': 300,
-   'Tmall.pipelines.GoodsWithJsonPipeline':301
+   # 'Tmall.pipelines.GoodsWithJsonPipeline':301
 }
 
 # Enable and configure the AutoThrottle extension (disabled by default)
@@ -92,6 +93,6 @@ ITEM_PIPELINES = {
 #HTTPCACHE_DIR = 'httpcache'
 #HTTPCACHE_IGNORE_HTTP_CODES = []
 #HTTPCACHE_STORAGE = 'scrapy.extensions.httpcache.FilesystemCacheStorage'
-
+DOWNLOAD_DELAY = 3
 
 LOG_LEVEL = 'ERROR'

@@ -5,7 +5,6 @@ from bs4 import BeautifulSoup
 from lxml import etree
 from scrapy import Request
 from urllib import parse
-from selenium import webdriver
 from Tmall.items import *
 
 
@@ -15,6 +14,40 @@ class UniqloSpider(scrapy.Spider):
     start_urls = ['https://uniqlo.m.tmall.com/shop/shop_auction_search.do']
 
     url = 'https://uniqlo.m.tmall.com/shop/shop_auction_search.do'
+
+    shop_url_list = [   'https://xiaomi.m.tmall.com/',
+                        'https://samsung.m.tmall.com/',
+                        'https://sanzhisongshu.m.tmall.com/',
+                        'https://dell.m.tmall.com/',
+                        'https://aocsm.m.tmall.com/',
+                        'https://casio.m.tmall.com/',
+                        'https://yamaha.m.tmall.com/',
+                        'https://hkcshuma.m.tmall.com/',
+                        'https://nanjiren.m.tmall.com/',
+                        'https://clarks.m.tmall.com/',
+                        'https://ecco.m.tmall.com/',
+                        'https://luotuo.m.tmall.com/',
+                        'https://aokang.m.tmall.com/',
+                        'https://yearcon.m.tmall.com/',
+                        'https://oppo.m.tmall.com/',
+                        'https://huawei.m.tmall.com/',
+                        'https://apple.m.tmall.com/',
+                        'https://huaweistore.m.tmall.com/',
+                        'https://meizu.m.tmall.com/',
+                        'https://meitusj.m.tmall.com/',
+                        'https://nubia.m.tmall.com/',
+                        'https://nokiashouji.m.tmall.com/',
+                        'https://lenovo.m.tmall.com/',
+                        'https://logitech.m.tmall.com/',
+                        'https://kingston.m.tmall.com/',
+                        'https://dji.m.tmall.com/',
+                        'https://razer.m.tmall.com/',
+                        'https://taidian.m.tmall.com/',
+                        'https://sonyshouji.m.tmall.com/',
+                        'https://leshitv.m.tmall.com/',
+                        'https://philipschina.m.tmall.com/',
+                        'https://hisensetv.m.tmall.com/',
+                    ]
 
     def __init__(self):
         '''
@@ -57,6 +90,7 @@ class UniqloSpider(scrapy.Spider):
             "csg": "17153f9e",
             "skt": "e54c5c99ab77f769",
             "_m_h5_tk": "8a1bd52de17c3e11d57dc9262901d893_1548522921376",
+            # "x5sec" : "7b227477736d3b32223a223732636364363366373234636463643731323330623432353734383634646332434c364f734f4d46454f4f6639372b363234656739674561444449354e4449344f4455784e6a6b374d513d3d227d",
             "_m_h5_tk_enc": "f5ad8ee422bdb934f61a87456d01e580",
             }
 
@@ -78,23 +112,48 @@ class UniqloSpider(scrapy.Spider):
 
         res_json = json.loads(res.text)         #转换为json格式
 
+        if res_json == None:
+            print(False)
+        else:
+            print(res_json)
+
         if 'items' in res_json:                 #提取json 数据
 
-            page_num = res_json['total_page']       #总页数
+            # page_num = res_json['total_page']       #总页数
+            #
+            # current_page = res_json['current_page']     #当前页数
 
-            current_page = res_json['current_page']     #当前页数
 
-            print(current_page)
+            # for i in res_json['items']:
+            #     allItem = TmallItem()
+            #     allItem['item_id'] = i['item_id']
+            #     allItem['title'] = i['title']
+            #     allItem['img'] = i['img']
+            #     allItem['sold'] = i['sold']
+            #     allItem['quantity'] = i['quantity']
+            #     allItem['url'] = i['url']
+            #     allItem['price'] = i['price']
+            #
+            #     print(allItem)
 
-            self.save_data(res_json['items'],headers)   #商品详情抓取
-
+            # for i in res_json['items']:
+            #     time.sleep(10)
+            #     yield scrapy.Request(url=parse.urljoin("https:", i['url']), headers=headers, dont_filter=True,
+            #                          callback=self.parse_detail)  # 爬取商品详情
+            #
             # if current_page < page_num:                 #判断页数是否到底
             #
             #     time.sleep(10)
             #     yield scrapy.Request(url=parse.urljoin(self.url,'?p=%s'%(int(current_page)+1)),callback=self.parse,dont_filter=True)    #下一页爬取
 
+            for url in self.shop_url_list:
+
+                time.sleep(10)
+                print(url)
+                yield scrapy.Request(url=parse.urljoin(url,'shop/shop_auction_search.do'),callback=self.parse,dont_filter=True)    #下一页爬取
+
         else:
-            print('请先在电脑上登陆手机版淘宝')
+            print('Cookies失效，请手动更新Cookies')
 
 
 
@@ -116,31 +175,6 @@ class UniqloSpider(scrapy.Spider):
         })
 
         return self.loginHeaders
-
-    def save_data(self,json_data,headers):          #商品列表爬取
-
-
-
-        print(json_data)
-
-        for i in json_data:
-            allItem = TmallItem()
-            allItem['item_id'] = i['item_id']
-            allItem['title'] = i['title']
-            allItem['img'] = i['img']
-            allItem['sold'] = i['sold']
-            allItem['quantity'] = i['quantity']
-            allItem['url'] = i['url']
-            allItem['price'] = i['price']
-            print(allItem)
-
-            yield allItem
-
-
-        for i in json_data:
-            time.sleep(10)
-            yield scrapy.Request(url=parse.urljoin("https:",i['url']),headers=headers,dont_filter=True,callback=self.parse_detail)      #爬取商品详情
-
 
 
     def parse_detail(self,response):        #商品详情爬取
@@ -175,4 +209,4 @@ class UniqloSpider(scrapy.Spider):
         goodsItem['type'] = content[8]
         goodsItem['composition'] = content[9]
 
-        return goodsItem
+        yield goodsItem

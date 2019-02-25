@@ -17,9 +17,11 @@ class Proxy(object):
         if h == 'https':
             ip = random.choice(Proxy_https)
             request.meta['proxy'] = 'https://' + ip
+            print(ip)
         else:
             ip = random.choice(Proxy_http)
             request.meta['proxy'] = 'http://' + ip
+            print(ip)
 
 class TmallSpiderMiddleware(object):
     # Not all methods need to be defined. If a method is not defined,
@@ -128,7 +130,14 @@ Proxy_http = [
 ]
 
 Proxy_https = [
-    '114.88.53.19:53281',
-    '218.60.8.99:3129',
+    '198.27.67.35:3128',
+    '104.248.74.241:8080',
+    '184.105.143.66:3128',
+    '157.230.137.96:3128',
+    '178.128.190.27:3128',
+    '163.172.220.221:8888',
+    '178.62.210.107:8080',
+    '173.63.111.190:80',
+    '198.100.147.121:3128'
 ]
 

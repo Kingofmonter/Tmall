@@ -6,12 +6,14 @@
 # See: https://doc.scrapy.org/en/latest/topics/item-pipeline.html
 import json
 import codecs
+import csv
 from scrapy.exporters import JsonItemExporter
 from Tmall.items import *
 
 class TmallPipeline(object):
     def process_item(self, item, spider):
         return item
+
 
 
 class TmallWithJsonPipeline(object):    #商品列表管道
@@ -26,10 +28,12 @@ class TmallWithJsonPipeline(object):    #商品列表管道
         self.file.close()
 
     def process_item(self, item, spider):
-        print(item)
+
         if isinstance(item,TmallItem):
+            print(True)
             self.exporter.export_item(item)
             return item
+
 
 
 class GoodsWithJsonPipeline(object):    #商品详情管道
@@ -45,5 +49,7 @@ class GoodsWithJsonPipeline(object):    #商品详情管道
         self.file.close()
 
     def process_item(self, item, spider):
-        self.exporter.export_item(item)
-        return item
+        if isinstance(item,GoodsDetail):
+            print('detail',item)
+            self.exporter.export_item(item)
+            return item
