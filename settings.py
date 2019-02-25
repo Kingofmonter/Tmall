@@ -69,7 +69,7 @@ DOWNLOADER_MIDDLEWARES = {
 # See https://doc.scrapy.org/en/latest/topics/item-pipeline.html
 ITEM_PIPELINES = {
 
-   'Tmall.pipelines.TmallWithJsonPipeline': 300,
+   # 'Tmall.pipelines.TmallWithJsonPipeline': 300,
    # 'Tmall.pipelines.GoodsWithJsonPipeline':301
 }
 

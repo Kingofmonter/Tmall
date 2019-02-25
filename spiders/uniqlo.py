@@ -32,21 +32,7 @@ class UniqloSpider(scrapy.Spider):
                         'https://oppo.m.tmall.com/',
                         'https://huawei.m.tmall.com/',
                         'https://apple.m.tmall.com/',
-                        'https://huaweistore.m.tmall.com/',
-                        'https://meizu.m.tmall.com/',
-                        'https://meitusj.m.tmall.com/',
-                        'https://nubia.m.tmall.com/',
-                        'https://nokiashouji.m.tmall.com/',
-                        'https://lenovo.m.tmall.com/',
-                        'https://logitech.m.tmall.com/',
-                        'https://kingston.m.tmall.com/',
-                        'https://dji.m.tmall.com/',
-                        'https://razer.m.tmall.com/',
-                        'https://taidian.m.tmall.com/',
-                        'https://sonyshouji.m.tmall.com/',
-                        'https://leshitv.m.tmall.com/',
-                        'https://philipschina.m.tmall.com/',
-                        'https://hisensetv.m.tmall.com/',
+
                     ]
 
     def __init__(self):
@@ -119,41 +105,44 @@ class UniqloSpider(scrapy.Spider):
 
         if 'items' in res_json:                 #提取json 数据
 
-            # page_num = res_json['total_page']       #总页数
-            #
-            # current_page = res_json['current_page']     #当前页数
+            page_num = res_json['total_page']       #总页数
+
+            current_page = res_json['current_page']     #当前页数
 
 
-            # for i in res_json['items']:
-            #     allItem = TmallItem()
-            #     allItem['item_id'] = i['item_id']
-            #     allItem['title'] = i['title']
-            #     allItem['img'] = i['img']
-            #     allItem['sold'] = i['sold']
-            #     allItem['quantity'] = i['quantity']
-            #     allItem['url'] = i['url']
-            #     allItem['price'] = i['price']
-            #
-            #     print(allItem)
+            for i in res_json['items']:
+                allItem = TmallItem()
+                allItem['item_id'] = i['item_id']
+                allItem['title'] = i['title']
+                allItem['img'] = i['img']
+                allItem['sold'] = i['sold']
+                allItem['quantity'] = i['quantity']
+                allItem['url'] = i['url']
+                allItem['price'] = i['price']
+
+                print(allItem)
+                return allItem
 
             # for i in res_json['items']:
             #     time.sleep(10)
             #     yield scrapy.Request(url=parse.urljoin("https:", i['url']), headers=headers, dont_filter=True,
             #                          callback=self.parse_detail)  # 爬取商品详情
-            #
-            # if current_page < page_num:                 #判断页数是否到底
-            #
-            #     time.sleep(10)
-            #     yield scrapy.Request(url=parse.urljoin(self.url,'?p=%s'%(int(current_page)+1)),callback=self.parse,dont_filter=True)    #下一页爬取
 
-            for url in self.shop_url_list:
+            if current_page < page_num:                 #判断页数是否到底
 
                 time.sleep(10)
-                print(url)
-                yield scrapy.Request(url=parse.urljoin(url,'shop/shop_auction_search.do'),callback=self.parse,dont_filter=True)    #下一页爬取
+                yield scrapy.Request(url=parse.urljoin(response.url,'?p=%s'%(int(current_page)+1)),callback=self.parse,dont_filter=True)    #下一页爬取
 
         else:
             print('Cookies失效，请手动更新Cookies')
+
+        for url in self.shop_url_list:
+
+            time.sleep(10)
+            print(url)
+            yield scrapy.Request(url=parse.urljoin(url,'shop/shop_auction_search.do'),callback=self.parse,dont_filter=True)    #下一页爬取
+
+
 
 
 
