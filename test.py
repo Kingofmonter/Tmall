@@ -19,12 +19,14 @@ def verify(ip,port,type):
         proxies['host'] = ip
         proxies['port'] = port
         proxiesJson = json.dumps(proxies)
-        with open('verified_proxies.json','a+') as f:
-            f.write(proxiesJson + '\n')
-        print("已写入：%s" % proxies)
+        if proxies['type'] == 'https':
+            with open('verified_proxies.json','a+') as f:
+                f.write(proxiesJson + '\n')
+            print("已写入：%s" % proxies)
 
 def getProxy(proxy_url):
     response = requests.get(proxy_url)
+
     proxies_list = response.text.split('\n')
     for proxy_str in proxies_list:
         proxy_json = json.loads(proxy_str)

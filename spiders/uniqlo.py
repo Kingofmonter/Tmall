@@ -90,26 +90,30 @@ class UniqloSpider(scrapy.Spider):
         'BBsbLT65w_J4cj8fTnS30GOSqn9FWDCBIeEWMQ1Y95ox7DvOlcC_QjluggxHSYfq'
         ]
 
+        self.x5sec = {
+            "x5sec" : "7b227477736d3b32223a223732636364363366373234636463643731323330623432353734383634646332434c364f734f4d46454f4f6639372b363234656739674561444449354e4449344f4455784e6a6b374d513d3d227d"
+        }
+
 
     def start_requests(self):
         for url in self.shop_url_list:
 
+            flag = True
             time.sleep(10)
-            print(url)
-            yield scrapy.Request(url=parse.urljoin(url,'shop/shop_auction_search.do'),callback=self.parse,dont_filter=True)    #下一页爬取
+
+            yield scrapy.Request(url=parse.urljoin(url,'shop/shop_auction_search.do'),callback=self.parse,dont_filter=True,meta={'flag':flag})    #下一页爬取
 
     def parse(self, response):
-
-        headers = self.get_new_headers()        #获取随机headers
+        print(response.url)
+        flag = response.meta['flag']
+        print(flag)
+        headers = self.get_new_headers(flag)        #获取随机headers
 
         res = requests.get(url=response.url, headers=headers)
 
         res_json = json.loads(res.text)         #转换为json格式
 
-        if res_json == None:
-            print(False)
-        else:
-            print(res_json)
+        print(res_json)
 
         if 'items' in res_json:                 #提取json 数据
 
@@ -139,10 +143,13 @@ class UniqloSpider(scrapy.Spider):
             if current_page < page_num:                 #判断页数是否到底
 
                 time.sleep(10)
-                yield scrapy.Request(url=parse.urljoin(response.url,'?p=%s'%(int(current_page)+1)),callback=self.parse,dont_filter=True)    #下一页爬取
+                yield scrapy.Request(url=parse.urljoin(response.url,'?p=%s'%(int(current_page)+1)),callback=self.parse,dont_filter=True,meta={'flag':flag})    #下一页爬取
 
         else:
-            print('Cookies失效，请手动更新Cookies')
+            flag = False
+            time.sleep(5)
+            print('Flag:Flase')
+            yield scrapy.Request(url=parse.urljoin(response.url,'shop/shop_auction_search.do'),callback=self.parse,dont_filter=True,meta={'flag':flag})    #下一页爬取
 
 
 
@@ -151,13 +158,21 @@ class UniqloSpider(scrapy.Spider):
 
 
 
-    def get_new_headers(self):          #随机更新cookies
+
+    def get_new_headers(self,flag):          #随机更新cookies
 
         isg = random.choice(self.isg_list)
+        x5sec = self.x5sec['x5sec']
 
-        self.Cookies.update({
-            "isg": isg
-        })
+        if flag == True:
+            self.Cookies.update({
+                "isg": isg
+            })
+        else:
+            self.Cookies.update({
+                "isg": isg,
+                "x5sec": x5sec
+            })
 
         cookie_list = ''                    #cookies转化为str
         for k in self.Cookies:
